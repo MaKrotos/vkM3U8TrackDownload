@@ -1,10 +1,19 @@
 # vkM3U8TrackDownload
 
+Этот код позволяет скачать Track из вк, если подсунуть ему ссылку на m3u8.
+Для использования
+
+```C#
+  var downloader = new M3U8Downloader(uri);
+  downloader.DownloadAndCombineAudio(outputFilePath);
 ```
 
 
-namespace vkPosterBot.TgBot
-{
+
+```C#
+
+
+
     using System;
     using System.IO;
     using System.Linq;
@@ -211,6 +220,6 @@ namespace vkPosterBot.TgBot
        
 
     }
-}
+
 
 ```
