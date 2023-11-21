@@ -37,7 +37,7 @@
           file.Tag.Track = (uint)audio.Id; // Номер трека
 
           file.Tag.Year = (uint)audio.Date.Year; // Год
-          file.Tag.Comment = audio.Subtitle; /
+          file.Tag.Comment = audio.Subtitle; 
 
 
           file.Save();
