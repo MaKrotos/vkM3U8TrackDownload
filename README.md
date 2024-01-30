@@ -13,52 +13,43 @@
 Файл получается по итогу без свойств и нормального назания.
 Но достаточно сделать вот так (здесь используется либа TagLib-sharp):
 ```C#
-  public async Task<string> downloadTrack(Audio audio, string filename) 
-  {
-      var downloader = new M3U8Downloader(audio.Url.ToString(), filename);
-      string pathTrack = downloader.DownloadAndCombineAudio();
+  public async Task<string> DownloadTrackAsync(Audio audio, string filename) 
+{
+    var downloader = new M3U8Downloader(audio.Url.ToString(), filename);
+    string trackPath = await downloader.DownloadAndCombineAudioAsync();
 
-      string newpath = AddPropertiesToFile(pathTrack, audio);
+    string newPath = AddMetadataToAudioFile(trackPath, audio);
 
-      return newpath;
-  }
+    return newPath;
+}
 
-  public static string AddPropertiesToFile(string filePath, Audio audio)
-  {
- 
-      if (System.IO.File.Exists(filePath))
-      {
-         var file = TagLib.File.Create(filePath);
+public static string AddMetadataToAudioFile(string filePath, Audio audio)
+{
+    if (!System.IO.File.Exists(filePath))
+    {
+        Console.WriteLine($"File not found at path {filePath}");
+        return filePath;
+    }
 
+    var audioFile = TagLib.File.Create(filePath);
 
-          file.Tag.Title = audio.Title; // Название трека
-          file.Tag.Performers = new string[] { audio.Artist }; // Исполнитель
-          file.Tag.Album = audio.Album?.Title; // Название альбома
-          file.Tag.Track = (uint)audio.Id; // Номер трека
+    audioFile.Tag.Title = audio.Title;
+    audioFile.Tag.Performers = new[] { audio.Artist };
+    audioFile.Tag.Album = audio.Album?.Title;
+    audioFile.Tag.Track = (uint)audio.Id;
+    audioFile.Tag.Year = (uint)audio.Date.Year;
+    audioFile.Tag.Comment = audio.Subtitle;
 
-          file.Tag.Year = (uint)audio.Date.Year; // Год
-          file.Tag.Comment = audio.Subtitle; 
+    audioFile.Save();
 
+    string newFileName = $"{audio.Title} - {audio.Artist}.mp3";
+    string folderPath = Path.GetDirectoryName(filePath);
+    string newFilePath = System.IO.Path.Combine(folderPath, newFileName);
 
-          file.Save();
+    System.IO.File.Move(filePath, newFilePath);
+    return newFilePath;
+}
 
-       
-          string newFileName = audio.Title + " - " + audio.Artist + ".mp3";
-          string folderPath = Path.GetDirectoryName(filePath);
-
-          string newFilePath = System.IO.Path.Combine(folderPath, newFileName);
-
- 
-          System.IO.File.Move(filePath, newFilePath);
-          filePath = System.IO.Path.Combine(folderPath, newFileName);
-      }
-      else
-      {
-          // Выводим сообщение об ошибке, если файл не найден
-          Console.WriteLine("Файл не найден по пути {0}", filePath);
-      }
-      return filePath;
-  }
 
 
 ```
