@@ -72,7 +72,7 @@ public static string AddMetadataToAudioFile(string filePath, Audio audio)
  {
      private string _m3u8Url;
      private string track_name;
-     private Audio audio;
+
 
      public M3U8Downloader(string m3u8Url, string track_name)
      {
